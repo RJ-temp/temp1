@@ -1,0 +1,12 @@
+#List all messages
+
+GET http://localhost:3000/messages
+
+#Send a message
+
+POST  http://localhost:3000/messages
+Content-Type: application/json
+
+{
+    "Message" : "Hello message"
+}
