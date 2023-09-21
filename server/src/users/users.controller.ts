@@ -1,14 +1,18 @@
-import { Body, Controller, Get, Post , Patch , Delete , Param , Query , Session } from '@nestjs/common';
+import { Body, Controller, Get, Post , Patch , Delete , Param , Query , Session,UseGuards} from '@nestjs/common';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { Serialize } from 'src/interceptors/serialize.intercept';
 import { UserDto } from './dtos/user.dto';
 import { AuthService } from './auth.service';
-import { setEngine } from 'crypto';
+import { CurrentUser } from './decorators/current-user.decorator';
+// import { CurrentUserInterceptor } from './interceptors/current-user.interceptor';
+import { User } from './user.entity';
+import { AuthGuard } from 'src/guards/auth.guard';
 
 @Controller('auth')
 @Serialize(UserDto)   //Apply to whole controller
+// @UseInterceptors(CurrentUserInterceptor)
 export class UsersController {
     constructor(private userService : UsersService, private authService:AuthService){}
     //Test routes for cookies
@@ -20,10 +24,10 @@ export class UsersController {
     // getColor(@Session() session:any){
     //     return session.color;
     // }
-
+    @UseGuards(AuthGuard)
     @Get('/who')
-    whoAmI(@Session() session:any){
-        return this.userService.findOne(session.userId);
+    whoAmI(@CurrentUser() user:User){
+        return user;
     }
     @Post('/signout')
     signout(@Session() session:any){
